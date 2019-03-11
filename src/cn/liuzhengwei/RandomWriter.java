@@ -37,17 +37,15 @@ public class RandomWriter {
             for (int i = 0; i < order && reader.read(cbuf) != -1; i++)
                 seed[i] = cbuf[0];
 
-
             while (reader.read(cbuf) != -1){
-                if (!model.containsKey(seed.toString()))
+                String s = seed.toString();
+                if (!model.containsKey(s))
                 {
                     Vector tmp = new Vector(0);
                     tmp.addElement(cbuf[0]);
-                    String s = new String(seed);
                     model.put(s, tmp);
-                }
-                else {
-                    model.get(seed).addElement(cbuf[0]);
+                } else {
+                    model.get(s).addElement(cbuf[0]);
                 }
 
                 for (int j=0;j<order-1;j++)
@@ -56,11 +54,11 @@ public class RandomWriter {
                 seed[order - 1] = cbuf[0];
             }
 
-            if (!model.containsKey(seed.toString()))
+            String s = new String(seed);
+            if (!model.containsKey(s))
             {
                 Vector tmp = new Vector(0);
                 tmp.addElement(cbuf[0]);
-                String s = new String(seed);
                 model.put(s, tmp);
             }
         } catch (IOException e) {
