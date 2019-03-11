@@ -1,9 +1,9 @@
 package cn.liuzhengwei;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
+import java.lang.*;
+import java.io.*;
+
 
 public class RandomWriter {
     static HashMap<String, Vector> model = new HashMap<>();
@@ -30,49 +30,38 @@ public class RandomWriter {
                 break;
         }
 
-
-        try (FileReader reader = new FileReader("C:\\Users\\75667\\IdeaProjects\\RandomWriter\\src\\cn\\liuzhengwei\\"+file_name);
-             BufferedReader br = new BufferedReader(reader)
-        ) {
-            String line;
+        try (FileReader reader = new FileReader("C:\\Users\\75667\\IdeaProjects\\RandomWriter\\src\\cn\\liuzhengwei\\"+file_name)){
+            char[] cbuf = new char[1];
             char[] seed = new char[order];
 
-            line = br.readLine();
-            for (int i = 0; i < order; i++)
-                seed[i] = line.charAt(i);
+            for (int i = 0; i < order && reader.read(cbuf) != -1; i++)
+                seed[i] = cbuf[0];
 
-            for (int i=order;i<line.length();i++){
-                if (!model.containsKey(seed))
+
+            while (reader.read(cbuf) != -1){
+                if (!model.containsKey(seed.toString()))
                 {
                     Vector tmp = new Vector(0);
-                    tmp.addElement(line.charAt(i));
+                    tmp.addElement(cbuf[0]);
                     String s = new String(seed);
                     model.put(s, tmp);
                 }
-                else
-                    model.get(seed).addElement(line.charAt(i));
+                else {
+                    model.get(seed).addElement(cbuf[0]);
+                }
+
                 for (int j=0;j<order-1;j++)
                     seed[j] = seed[j+1];
 
-                seed[order - 1] = line.charAt(i);
+                seed[order - 1] = cbuf[0];
             }
 
-            while((line = br.readLine()) != null){
-                for (int i=0;i<line.length();i++){
-                    if (!model.containsKey(seed))
-                    {
-                        Vector tmp = new Vector(0);
-                        tmp.addElement(line.charAt(i));
-                        String s = new String(seed);
-                        model.put(s, tmp);
-                    }
-                    else
-                        model.get(seed).addElement(line.charAt(i));
-                    for (int j=0;j<order-1;j++)
-                        seed[j] = seed[j+1];
-
-                    seed[order - 1] = line.charAt(i);
-                }
+            if (!model.containsKey(seed.toString()))
+            {
+                Vector tmp = new Vector(0);
+                tmp.addElement(cbuf[0]);
+                String s = new String(seed);
+                model.put(s, tmp);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +90,7 @@ public class RandomWriter {
         while (count <= 2000)
         {
             String tmp = key;
-            if (model.get(key).size() == 0)
+            if (!model.containsKey(key) || model.get(key).size() == 0)
                 break;
 
             int random = rand.nextInt(model.get(key).size());
